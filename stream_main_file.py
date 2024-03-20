@@ -8,7 +8,8 @@ from nltk.stem import WordNetLemmatizer
 from keras.models import load_model
 
 # Load the pre-trained model
-model = load_model('model.h5')
+with open("rf_model.pkl", "rb") as f:
+    model = pickle.load(f)
 
 # Load the TF-IDF vectorizer and label encoder
 with open("tfidf_vectorizer.pkl", "rb") as f:
@@ -42,8 +43,7 @@ def predict_internal_status(text):
     cleaned_text = clean_text(text)
     tfidf_features = tfidf_vectorizer.transform([cleaned_text])
     pred = model.predict(tfidf_features)
-    y_pred = np.argmax(pred, axis=1)
-    y_pred_original = label_encoder.inverse_transform(y_pred)
+    y_pred_original = label_encoder.inverse_transform(pred)
     return y_pred_original[0]
 
 # Streamlit app interface
@@ -52,14 +52,11 @@ def main():
     st.write("Enter the text to predict the internal status:")
     input_text = st.text_area("Input Text", "")
     if st.button("Predict"):
-        try:
-            if input_text:
-                prediction_result = predict_internal_status(input_text)
-                st.write("Predicted Internal Status:", prediction_result)
-            else:
-                st.error("Input text is empty. Please provide some text.")
-        except Exception as e:
-            st.error(f"An error occurred: {str(e)}")
+        if input_text:
+            prediction_result = predict_internal_status(input_text)
+            st.success(f"Predicted Internal Status: {prediction_result}")
+        else:
+            st.write("Error: Input text is empty. Please provide some text.")
 
 if __name__ == "__main__":
     main()
