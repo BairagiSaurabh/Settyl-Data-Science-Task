@@ -5,7 +5,7 @@ import re
 import numpy as np
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from tensorflow.keras.models import load_model
+from keras.models import load_model
 
 # Load the pre-trained model
 model = load_model('model.h5')
@@ -52,11 +52,14 @@ def main():
     st.write("Enter the text to predict the internal status:")
     input_text = st.text_area("Input Text", "")
     if st.button("Predict"):
-        if input_text:
-            prediction_result = predict_internal_status(input_text)
-            st.write("Predicted Internal Status:", prediction_result)
-        else:
-            st.write("Error: Input text is empty. Please provide some text.")
+        try:
+            if input_text:
+                prediction_result = predict_internal_status(input_text)
+                st.write("Predicted Internal Status:", prediction_result)
+            else:
+                st.error("Input text is empty. Please provide some text.")
+        except Exception as e:
+            st.error(f"An error occurred: {str(e)}")
 
 if __name__ == "__main__":
     main()
