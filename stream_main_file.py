@@ -19,6 +19,8 @@ with open("label_encoder.pkl", "rb") as f:
     label_encoder = pickle.load(f)
 
 # Download NLTK resources
+
+nltk.download('wordnet')
 nltk.download('stopwords')
 lemma = WordNetLemmatizer()
 
