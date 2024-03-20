@@ -6,6 +6,8 @@ import numpy as np
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from tensorflow import keras
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 #from tensorflow.keras.models import load_model
 from keras.models import load_model
 import uvicorn
@@ -15,6 +17,9 @@ app = FastAPI()
 
 nltk.download('stopwords')
 lemma = WordNetLemmatizer()
+
+class TextData(BaseModel):
+    text: str
 
 def clean_text(text):
 
@@ -54,8 +59,8 @@ async def index():
 
 # Define your API endpoints and functions here
 @app.post("/predict")
-async def predict_internal_status(text: str):
-    cleaned_text = clean_text(text) # Preprocess the input text
+async def predict_internal_status(text_data: TextData):
+    cleaned_text = clean_text(text_data.text) # Preprocess the input text
 
     tfidf_features = tfidf_vectorizer.transform([cleaned_text])  # Transform the preprocessed text using TF-IDF vectorizer
     pred = model.predict(tfidf_features)  # Predict the internal status using the model
